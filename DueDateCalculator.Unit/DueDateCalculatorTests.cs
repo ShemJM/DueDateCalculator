@@ -10,7 +10,7 @@ namespace DueDateCalculator.Unit
     public class DueDateCalculatorTests
     {
         [Fact]
-        public void DueDate_ShouldBeCorrect()
+        public void DueDates_ShouldBeCorrect()
         {
             var calculator = new DueDateCalculator();
 
