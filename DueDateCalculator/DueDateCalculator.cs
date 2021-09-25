@@ -1,26 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DueDateCalculator.Models;
+using System;
 
 namespace DueDateCalculator
 {
     public class DueDateCalculator
     {
-        private readonly DayOfWeek[] _workDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday };
+        private DayOfWeek[] _workDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday };
 
         private int _workDaysCount => _workDays.Length;
 
-        private readonly int _workHoursAmount = 8;
+        private double _workHoursAmount => _endTime - _startTime - _breakAllowance;
 
-        private readonly double _startTime = 9.00;
+        private double _startTime = 9.00;
 
-        private readonly double _endTime = 17.00;
+        private double _endTime = 17.00;
+
+        private double _breakAllowance = 0.00;
 
         public DueDateCalculator()
         {
 
+        }
+
+        public DueDateCalculator For(Company company)
+        {
+            _workDays = company.WorkingDays;
+            _startTime = company.StartTime;
+            _endTime = company.EndTime;
+            _breakAllowance = company.BreakAllowance;
+
+            return this;
         }
 
         public DateTime CalculateDueDate(DateTime submitDate, TimeSpan turnaroundTime)
@@ -35,6 +44,10 @@ namespace DueDateCalculator
 
             return dueDateTime;
         }
+
+        public DateTime CalculateDueDate(Issue issue) => CalculateDueDate(issue.SubmitDate, issue.TurnaroundTime);
+
+        public void CalculateAndSetDueDate(Issue issue) => issue.DueDate = CalculateDueDate(issue.SubmitDate, issue.TurnaroundTime);
 
         public double CalculateExpectedEndTime(DateTime submitDate, TimeSpan turnaroundTime)
         {
