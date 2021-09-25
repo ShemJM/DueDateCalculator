@@ -24,6 +24,7 @@ namespace DueDateCalculator.Unit
 
         private List<DueDateCalculatorTestCase> TestCases => new()
         {
+            new DueDateCalculatorTestCase(new DateTime(2021, 9, 21, 14, 00, 0), new TimeSpan(00, 10, 30), new DateTime(2021, 9, 21, 14, 10, 30)),
             new DueDateCalculatorTestCase(new DateTime(2021, 9, 21, 14, 12, 0), new TimeSpan(16, 00, 0), new DateTime(2021, 9, 23, 14, 12, 0)),
             new DueDateCalculatorTestCase(new DateTime(2021, 9, 21, 16, 59, 0), new TimeSpan(8, 0, 0), new DateTime(2021, 9, 22, 16, 59, 0)),
             new DueDateCalculatorTestCase(new DateTime(2021, 9, 21, 16, 59, 0), new TimeSpan(16, 0, 0), new DateTime(2021, 9, 23, 16, 59, 0)),

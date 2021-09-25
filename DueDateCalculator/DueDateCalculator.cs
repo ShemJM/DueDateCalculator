@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DueDateCalculator.Unit
+namespace DueDateCalculator
 {
-    class DueDateCalculator
+    public class DueDateCalculator
     {
         private readonly DayOfWeek[] _workDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday };
 
@@ -25,9 +25,20 @@ namespace DueDateCalculator.Unit
 
         public DateTime CalculateDueDate(DateTime submitDate, TimeSpan turnaroundTime)
         {
-            var hoursRemainingInSubmittedDate = _endTime - submitDate.TimeOfDay.TotalHours;
+            var endTime = CalculateExpectedEndTime(submitDate, turnaroundTime);
 
-            var remainingTurnaroundTime = turnaroundTime.TotalHours - hoursRemainingInSubmittedDate;
+            var turnaroundTimeWorkDays = CalculateTurnaroundDays(submitDate, turnaroundTime);
+
+            var dueDate = GetNextWorkingDayAfterPeriod(submitDate, (int)Math.Round(turnaroundTimeWorkDays + 0.49)).Date;
+
+            var dueDateTime = dueDate.AddHours(endTime);
+
+            return dueDateTime;
+        }
+
+        public double CalculateExpectedEndTime(DateTime submitDate, TimeSpan turnaroundTime)
+        {
+            var remainingTurnaroundTime = CalculateRemainingTurnaroundTime(submitDate, turnaroundTime);
 
             var excessHours = remainingTurnaroundTime % _workHoursAmount;
 
@@ -35,16 +46,28 @@ namespace DueDateCalculator.Unit
 
             endTime = excessHours < 0 ? _endTime + excessHours : endTime;
 
-            var turnaroundTimeWorkDays = remainingTurnaroundTime / _workHoursAmount;
-
-            var dueDateDayOfTheWeek = GetNextWorkingDay(submitDate, (int)Math.Round(turnaroundTimeWorkDays + 0.49));
-
-            var dueDate = new DateTime(dueDateDayOfTheWeek.Year, dueDateDayOfTheWeek.Month, dueDateDayOfTheWeek.Day).AddHours(endTime);
-
-            return dueDate;
+            return endTime;
         }
 
-        private DateTime GetNextWorkingDay(DateTime date, int days)
+        public double CalculateTurnaroundDays(DateTime submitDate, TimeSpan turnaroundTime)
+        {
+            var remainingTurnaroundTime = CalculateRemainingTurnaroundTime(submitDate, turnaroundTime);
+
+            var turnaroundTimeWorkDays = remainingTurnaroundTime / _workHoursAmount;
+
+            return turnaroundTimeWorkDays;
+        }
+
+        public double CalculateRemainingTurnaroundTime(DateTime submitDate, TimeSpan turnaroundTime)
+        {
+            var hoursRemainingInSubmittedDate = _endTime - submitDate.TimeOfDay.TotalHours;
+
+            var remainingTurnaroundTime = turnaroundTime.TotalHours - hoursRemainingInSubmittedDate;
+
+            return remainingTurnaroundTime;
+        }
+
+        public DateTime GetNextWorkingDayAfterPeriod(DateTime date, int days)
         {
             var weeks = days > 7 ? Math.Round(days / 7.00) : 0;
             var dayIndex = (int)date.DayOfWeek + days;
