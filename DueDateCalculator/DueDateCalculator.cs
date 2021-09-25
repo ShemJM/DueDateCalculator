@@ -82,7 +82,7 @@ namespace DueDateCalculator
 
         public DateTime GetNextWorkingDayAfterPeriod(DateTime date, int days)
         {
-            var weeks = days > 7 ? Math.Round(days / 7.00) : 0;
+            var weeks = days > _workDaysCount ? Math.Round((days / (double)_workDaysCount) - 0.49) : 0;
             var dayIndex = (int)date.DayOfWeek + days;
 
             while (dayIndex > _workDaysCount)
