@@ -8,35 +8,31 @@ namespace DueDateCalculator
 {
     public class DueDateCalculator
     {
-        private readonly DayOfWeek[] _workDays = new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday };
-
-        private int _workDaysCount => _workDays.Length;
-
-        private double _workHoursAmount => _endTime - _startTime;
-
-        private readonly double _startTime = 9.00;
-
-        private readonly double _endTime = 17.00;
+        public CalculatorSettings Settings { get; set; } = new();
 
         public DueDateCalculator()
         {
 
         }
 
+        public DueDateCalculator(CalculatorSettings settings)
+        {
+            Settings = settings;
+        }
+
         public DateTime CalculateDueDate(DateTime submitDate, double turnaroundTimeHours)
         {
             var endDateTime = submitDate.AddHours(turnaroundTimeHours);
-            var endOfDay = submitDate.Date.AddHours(_endTime);
+            var endOfDay = submitDate.Date.AddHours(Settings.EndTime);
 
             if(endDateTime > endOfDay)
             {
                 var remainingTime = endDateTime - endOfDay;
                 var remainingHours = remainingTime.TotalHours;
-                var remainingDays = (int)Math.Round(remainingHours / _workHoursAmount + 0.49);
-                var excessHours = remainingHours % _workHoursAmount;
-                var endTime = excessHours > 0 ? _startTime + excessHours : _endTime;
+                var remainingDays = (int)Math.Round(remainingHours / Settings.WorkHoursAmount + 0.49);
+                var excessHours = remainingHours % Settings.WorkHoursAmount;
+                var endTime = excessHours > 0 ? Settings.StartTime + excessHours : Settings.EndTime;
                 endDateTime = GetNextWorkingDayAfterPeriod(submitDate, remainingDays).Date.AddHours(endTime);
-
             }
 
             return endDateTime;
@@ -44,15 +40,15 @@ namespace DueDateCalculator
 
         public DateTime GetNextWorkingDayAfterPeriod(DateTime date, int days)
         {
-            var weeks = days > _workDaysCount ? Math.Round((days / (double)_workDaysCount) - 0.49) : 0;
+            var weeks = days > Settings.WorkDays.Length ? Math.Round((days / (double)Settings.WorkDays.Length) - 0.49) : 0;
             var dayIndex = (int)date.DayOfWeek + days;
 
-            while (dayIndex > _workDaysCount)
+            while (dayIndex > Settings.WorkDays.Length)
             {
-                dayIndex -= _workDaysCount;
+                dayIndex -= Settings.WorkDays.Length;
             }
 
-            while (date.DayOfWeek != _workDays[dayIndex - 1])
+            while (date.DayOfWeek != Settings.WorkDays[dayIndex - 1])
             {
                 date = date.AddDays(1);
             }
