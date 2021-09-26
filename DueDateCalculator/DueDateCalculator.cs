@@ -8,11 +8,11 @@ namespace DueDateCalculator
 {
     public class DueDateCalculator
     {
-        public CalculatorSettings Settings { get; set; } = new();
+        public CalculatorSettings Settings { get; set; }
 
         public DueDateCalculator()
         {
-
+            Settings = new();
         }
 
         public DueDateCalculator(CalculatorSettings settings)
