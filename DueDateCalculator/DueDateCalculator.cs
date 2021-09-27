@@ -22,8 +22,11 @@ namespace DueDateCalculator
 
         public DateTime CalculateDueDate(DateTime submitDate, double turnaroundTimeHours)
         {
-            var endDateTime = submitDate.AddHours(turnaroundTimeHours);
-            var endOfDay = submitDate.Date.AddHours(Settings.EndTime);
+            var startTime = CalculateStartTime(submitDate);
+
+            var endOfDay = startTime.Date.AddHours(Settings.EndTime);
+
+            var endDateTime = startTime.AddHours(turnaroundTimeHours);
 
             if(endDateTime > endOfDay)
             {
@@ -32,10 +35,24 @@ namespace DueDateCalculator
                 var remainingDays = (int)Math.Round(remainingHours / Settings.WorkHoursAmount + 0.49);
                 var excessHours = remainingHours % Settings.WorkHoursAmount;
                 var endTime = excessHours > 0 ? Settings.StartTime + excessHours : Settings.EndTime;
-                endDateTime = GetNextWorkingDayAfterPeriod(submitDate, remainingDays).Date.AddHours(endTime);
+                endDateTime = GetNextWorkingDayAfterPeriod(startTime, remainingDays).Date.AddHours(endTime);
             }
 
             return endDateTime;
+        }
+
+        public DateTime CalculateStartTime(DateTime date)
+        {
+            var submittedTimeOfDay = date.TimeOfDay;
+
+            var startTime = GetWorkingDate(date);
+
+            if (submittedTimeOfDay.TotalHours > Settings.EndTime)
+                startTime = startTime.AddDays(1).Date.AddHours(Settings.StartTime);
+            else if (submittedTimeOfDay.TotalHours < Settings.StartTime)
+                startTime = startTime.Date.AddHours(Settings.StartTime);
+
+            return startTime;
         }
 
         public DateTime GetNextWorkingDayAfterPeriod(DateTime date, int days)
@@ -54,6 +71,14 @@ namespace DueDateCalculator
             }
 
             return date.AddDays(weeks * 7);
+        }
+
+        public DateTime GetWorkingDate(DateTime date)
+        {
+            while (!Settings.WorkDays.Any(w => w == date.DayOfWeek))
+                date = date.AddDays(1);
+
+            return date;
         }
     }
 }

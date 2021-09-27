@@ -15,6 +15,8 @@ namespace DueDateCalculator.Unit
             {
                 TestIssues = new List<TestIssue>()
                 {
+                    new TestIssue(new DateTime(2021, 9, 19, 1, 00, 0), 8.00, new DateTime(2021, 9, 20, 17, 0, 0)),
+                    new TestIssue(new DateTime(2021, 9, 20, 18, 00, 0), 8.00, new DateTime(2021, 9, 21, 17, 0, 0)),
                     new TestIssue(new DateTime(2021, 9, 20, 9, 00, 0), 16.00, new DateTime(2021, 9, 21, 17, 0, 0)),
                     new TestIssue(new DateTime(2021, 9, 21, 15, 00, 0), 3.00, new DateTime(2021, 9, 22, 10, 0, 0)),
                     new TestIssue(new DateTime(2021, 9, 21, 14, 12, 0), 16, new DateTime(2021, 9, 23, 14, 12, 0)),
